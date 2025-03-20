@@ -1,0 +1,193 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+@keyframes spinAround {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-spin-slow {
+    animation: spinAround 10s linear infinite;
+  }
+/* Fade-in animation when the component is first rendered */
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes slide-in-top {
+    0% {
+      transform: translateY(-30px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-in-left {
+    0% {
+      transform: translateX(-30px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Tailwind Custom Classes */
+  .animate-slide-in-top {
+    animation: slide-in-top 1s ease-out;
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 1.5s ease-out;
+  }
+  
+  .animate-slide-in-left {
+    animation: slide-in-left 1.5s ease-out;
+  }
+  
+  /* Keyframe for Fade-In Effect */
+@keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Tailwind Custom Class for Fade-In Animation */
+  .animate-fade-in {
+    animation: fade-in 1s ease-out;
+  }
+  
+  /* Keyframe for Button Hover Animation */
+  @keyframes button-hover {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.05);
+    }
+  }
+  
+  /* Tailwind Custom Class for Button Hover Animation */
+  .hover\:scale-105:hover {
+    animation: button-hover 0.3s ease-in-out;
+  }
+  
+@keyframes spinAround {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spinAround 10s linear infinite;
+  }
+  
+/* Fade-in animation when the component is first rendered */
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+}
+
+/* Bounce Animation */
+@keyframes bounce {
+    0% {
+      transform: translateY(0);
+    }
+    30% {
+      transform: translateY(-10px);
+    }
+    50% {
+      transform: translateY(5px);
+    }
+    70% {
+      transform: translateY(-5px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+}
+
+/* Glow Effect on Hover */
+@keyframes glow {
+    0% {
+      box-shadow: 0 0 10px rgba(255, 204, 0, 0.8);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(255, 204, 0, 1);
+    }
+    100% {
+      box-shadow: 0 0 10px rgba(255, 204, 0, 0.8);
+    }
+}
+
+/* Tailwind Custom Classes */
+.animate-fade-in {
+    animation: fadeIn 1s ease-out;
+}
+
+.animate-bounce {
+    animation: bounce 1s ease infinite;
+}
+
+.hover\:glow:hover {
+    animation: glow 1.5s ease-in-out infinite;
+}
+
+@keyframes circleAnimation {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(100px) translateY(0);
+  }
+  50% {
+    transform: translateX(100px) translateY(100px);
+  }
+  75% {
+    transform: translateX(0) translateY(100px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+/* Apply the animation to the ReviewCard */
+.animate-circle {
+  animation: circleAnimation 6s infinite;
+}

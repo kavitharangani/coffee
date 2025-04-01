@@ -7,12 +7,10 @@ const { authMiddleware, adminMiddleware } = require("../middleware/authMiddlewar
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { street, city, state, zipCode, country } = req.body;
-
-    // Ensure the user is authenticated and their user ID is attached to the request
-    const userId = req.user;  // This will be the user's ID from the JWT token
+    const userId = req.user.id; // Extract user ID from the authenticated request
 
     const address = new Address({
-      user: userId,  // Link the address to the authenticated user
+      user: userId,
       street,
       city,
       state,
@@ -31,8 +29,7 @@ router.post("/", authMiddleware, async (req, res) => {
 // Get all addresses for a user (only the logged-in user can view their addresses)
 router.get("/:userId", authMiddleware, async (req, res) => {
   try {
-    // Only allow the user to access their own addresses
-    if (req.user !== req.params.userId) {
+    if (req.user.id !== req.params.userId) {
       return res.status(403).json({ message: "Access denied. You can only view your own addresses." });
     }
 

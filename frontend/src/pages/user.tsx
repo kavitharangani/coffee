@@ -26,12 +26,24 @@ const UserForm: React.FC = () => {
   // Fetch all users from backend
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/users");
-      setUsers(response.data);
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:5000/api/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      console.log("API Response:", response.data); // Check if it's an array
+      if (Array.isArray(response.data)) {
+        setUsers(response.data);
+      } else {
+        console.error("Unexpected API response format:", response.data);
+        setError("Unexpected response format.");
+      }
     } catch (error) {
       console.error("Error fetching users:", error);
+      setError("Failed to fetch users.");
     }
   };
+  
 
   // Fetch users when component mounts
   useEffect(() => {
@@ -74,6 +86,31 @@ const UserForm: React.FC = () => {
       }
     }
   };
+  
+  // Handle deleting user with confirmation
+const handleDelete = async (userId: string) => {
+  const isConfirmed = window.confirm("Are you sure you want to delete this user?");
+  
+  if (!isConfirmed) return; // If user cancels, do nothing
+
+  try {
+    const token = localStorage.getItem("token");
+    await axios.delete(`http://localhost:5000/api/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setSuccess("User deleted successfully");
+    fetchUsers(); // Refresh user list after delete
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      setError(err.response?.data?.error || "Delete failed");
+    } else {
+      setError("Delete failed");
+    }
+  }
+};
+
 
   return (
     <div className="min-h-screen p-20 bg-gray-50 flex flex-col items-center">
@@ -85,15 +122,55 @@ const UserForm: React.FC = () => {
         {success && <p className="text-green-500 text-sm text-center">{success}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="text" name="userName" placeholder="Full Name" value={formData.userName} onChange={handleChange} className="w-full p-3 border rounded-lg" required />
-          <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full p-3 border rounded-lg" required />
-          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} className="w-full p-3 border rounded-lg" required />
-          <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} className="w-full p-3 border rounded-lg" required />
-          <select name="role" value={formData.role} onChange={handleChange} className="w-full p-3 border rounded-lg" required>
+          <input
+            type="text"
+            name="userName"
+            placeholder="Full Name"
+            value={formData.userName}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            required
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            required
+          />
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            required
+          >
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
-          <button type="submit" className="w-full bg-[#FFB22C] text-white p-3 rounded-lg transition">Register</button>
+          <button type="submit" className="w-full bg-[#FFB22C] text-white p-3 rounded-lg transition">
+            Register
+          </button>
         </form>
       </div>
 
@@ -110,16 +187,33 @@ const UserForm: React.FC = () => {
                   <th className="p-4 border">Name</th>
                   <th className="p-4 border">Email</th>
                   <th className="p-4 border">Role</th>
+                  <th className="p-4 border">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user._id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 border text-center">{user.userName}</td>
-                    <td className="p-4 border text-center">{user.email}</td>
-                    <td className="p-4 border text-center">{user.role}</td>
+                {users.length > 0 ? (
+                  users.map((user, index) => (
+                    <tr key={user._id || index} className="border-b hover:bg-gray-50">
+                      <td className="p-4 border text-center">{user?.userName || "N/A"}</td>
+                      <td className="p-4 border text-center">{user?.email || "N/A"}</td>
+                      <td className="p-4 border text-center">{user?.role || "N/A"}</td>
+                      <td className="p-4 border text-center">
+                        <button
+                          onClick={() => handleDelete(user._id!)}
+                          className="p-2 bg-red-500 text-white rounded-md"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="p-4 text-center text-gray-500">
+                      No users found.
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

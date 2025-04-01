@@ -9,8 +9,8 @@ import About from "./components/about";
 import Delivery from "./components/delivery";
 import AdminDashboard from "./pages/adminPanel";
 import StockManagement from "./pages/item";
-import UserForm from "./pages/user";
 import Menu from "./components/menuCategories";
+import UserForm from "./pages/user";
 
 function App() {
   return (

@@ -8,7 +8,7 @@ const { authMiddleware, adminMiddleware } = require("../middleware/authMiddlewar
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { paymentMethod, transactionId, cardDetails } = req.body;
-    const user = req.user; // Get the userId from the JWT token
+    const userId = req.user.id; // Get the user ID from JWT payload
 
     // Validate payment method
     if (!["COD", "Card"].includes(paymentMethod)) {
@@ -25,11 +25,11 @@ router.post("/", authMiddleware, async (req, res) => {
 
     // Create a payment record
     const newPayment = new Payment({
-      user, // Save the logged-in user's ID
+      user: userId, // Save the logged-in user's ID
       paymentMethod,
-      transactionId: transactionId || null, // optional transactionId
-      status: "Pending", // Default status can be "Pending"
-      cardDetails: paymentMethod === "Card" ? cardDetails : null // Only save card details if method is "Card"
+      transactionId: transactionId || null, // Optional transactionId
+      status: "Completed",
+      cardDetails: paymentMethod === "Card" ? cardDetails : null, // Only save card details if payment is by card
     });
 
     await newPayment.save();
@@ -37,7 +37,7 @@ router.post("/", authMiddleware, async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Payment recorded successfully",
-      payment: newPayment
+      payment: newPayment,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -47,7 +47,7 @@ router.post("/", authMiddleware, async (req, res) => {
 // Get all payments for the logged-in user
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const payments = await Payment.find({ user: req.user }); // Fetch payments only for the logged-in user
+    const payments = await Payment.find({ user: req.user.id }); // Use req.user.id
     res.status(200).json({ success: true, payments });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -57,7 +57,7 @@ router.get("/", authMiddleware, async (req, res) => {
 // Get a single payment by ID (only if it belongs to the logged-in user)
 router.get("/:id", authMiddleware, async (req, res) => {
   try {
-    const payment = await Payment.findOne({ _id: req.params.id, user: req.user }); // Ensure payment belongs to the logged-in user
+    const payment = await Payment.findOne({ _id: req.params.id, user: req.user.id }); // Use req.user.id
 
     if (!payment) {
       return res.status(404).json({ success: false, message: "Payment not found" });
@@ -79,7 +79,7 @@ router.put("/:id/status", authMiddleware, async (req, res) => {
     }
 
     const payment = await Payment.findOneAndUpdate(
-      { _id: req.params.id, user: req.user }, // Ensure payment belongs to the logged-in user
+      { _id: req.params.id, user: req.user.id }, // Use req.user.id
       { status },
       { new: true }
     );
@@ -97,7 +97,7 @@ router.put("/:id/status", authMiddleware, async (req, res) => {
 // Delete payment by ID (only if the payment belongs to the logged-in user)
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
-    const payment = await Payment.findOneAndDelete({ _id: req.params.id, user: req.user }); // Ensure payment belongs to the logged-in user
+    const payment = await Payment.findOneAndDelete({ _id: req.params.id, user: req.user.id }); // Use req.user.id
 
     if (!payment) {
       return res.status(404).json({ success: false, message: "Payment not found" });
